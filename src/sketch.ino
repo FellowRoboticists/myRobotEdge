@@ -24,6 +24,7 @@ void setup() {
   Serial.begin(9600);
   blinker.begin();
   blinker.blinkNumber(8); // For Leonardo
+  sweepServo.begin();
 
   mover.begin();
 
