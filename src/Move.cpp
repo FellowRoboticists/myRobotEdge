@@ -194,14 +194,17 @@ void Move::timedMove(int direction, int duration) {
 
 void Move::movingDelay(long duration) {
   long startTime = millis();
-  while (millis() - startTime < duration) {
-    // function in Look module checks for obstacle in direction of movement
-    if (looker->checkMovement() == false) {
+  long elapsedTime = 0;
+  
+  while (elapsedTime < duration) {
+    // function in Look module checks for obstacle in direction of movement 
+    if (looker->checkMovement() == false) { 
       if (moveState != MOV_ROTATE) {
-        // rotate is only valid movement
-        Serial.println("Stopping in moving Delay()");
-        brake();
+	// rotate is only valid movement
+	Serial.println("Stopping in moving Delay()"); 
+	brake(); 
       }
-    }
-  }
+    }  
+    elapsedTime = millis() - startTime;
+  }  
 }
