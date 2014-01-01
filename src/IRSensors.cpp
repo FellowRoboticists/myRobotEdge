@@ -1,3 +1,10 @@
+// myRobotEdge Arduino sketch
+//
+// Copyright (c) 2012 Michael Margolis
+// Copyright (c) 2013 Dave Sieh
+//
+// See LICENSE.txt for details.
+
 #include <Arduino.h>
 #include "IRSensors.h"
 

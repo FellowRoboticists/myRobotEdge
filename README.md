@@ -10,3 +10,11 @@ You will note that some of the code here looks like some of the library code we'
 got in the other repositories. They are not the same. The edge sketch is a 
 relatively small subset of the actual full libraries.
 
+Copyright
+=========
+
+Copyright (c) 2012 Michael Margolis
+
+Copyright (c) 2013 Dave Sieh
+
+See LICENSE.txt for details.
