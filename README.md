@@ -15,10 +15,10 @@ Building/Testing
 
 Preparation:
 
-1. Determine the directory in which you will place the Battery project
+1. Determine the directory in which you will place the myRobotEdge project
 2. Clone the https://github.com/FellowRoboticists/arduino-tasks project. This provides the necessary ruby tasks use by the rake command.
-3. Clone the https://github.com/FellowRoboticists/Battery project.
-4. In the Battery project directory, invoke the 'rake' command. This will automatically pull all the dependency libraries from GitHub and prepare the ino project for building.
+3. Clone the https://github.com/FellowRoboticists/myRobotEdge project.
+4. In the myRobotEdge project directory, invoke the 'rake' command. This will automatically pull all the dependency libraries from GitHub and prepare the ino project for building.
 
 To build the example sketch:
 
