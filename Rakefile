@@ -21,7 +21,8 @@ LIBS = [
   library('AFMotor', 'Adafruit-Motor-Shield-library', 'robot_kit'),
   library('LEDBlinker'),
   library('RobotMotor'),
-  library('SoftServo')
+  library('SoftServo'),
+  library('pspc_support')
 ]
 
 create_all_library_tasks env, LIBS, :default

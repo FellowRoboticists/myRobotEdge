@@ -2,13 +2,14 @@
 // myRobotEdge Arduino sketch
 //
 // Copyright (c) 2012 Michael Margolis
-// Copyright (c) 2013 Dave Sieh
+// Copyright (c) 2013,2014 Dave Sieh
 //
 // See LICENSE.txt for details.
 
 #include <LEDBlinker.h>
 #include <SoftServo.h>
 #include <RobotMotor.h>
+#include <pspc_support.h>
 #include "IRSensors.h"
 #include "Look.h"
 #include "Move.h"
@@ -41,28 +42,39 @@ void setup() {
   // Center the servo
   sweepServo.write(90, 2000);
 
-  Serial.println("Ready");
+  Serial.println(P("Ready"));
 }
 
 void loop() {
   // Code for roaming around and avoiding obstacles
   if (looker.lookForObstacle(OBST_FRONT_EDGE)) {
-    Serial.println("both sensors detected edge");
+
+#ifdef ROBOTEDGE_DEBUG
+    Serial.println(P("both sensors detected edge"));
+#endif
     mover.timedMove(MOV_BACK, 500);
     mover.rotate(120);
-    while (looker.lookForObstacle(OBST_FRONT_EDGE)) {
-      mover.stop(); // Stop motors if still over cliff
-    }
+
   } else if (looker.lookForObstacle(OBST_LEFT_EDGE)) {
-    Serial.println("left sensor detected edge");
+
+#ifdef ROBOTEDGE_DEBUG
+    Serial.println(P("left sensor detected edge"));
+#endif
     mover.timedMove(MOV_BACK, 500);
     mover.rotate(60);
+
   } else if (looker.lookForObstacle(OBST_RIGHT_EDGE)) {
-    Serial.println("right sensor detected edge");
+
+#ifdef ROBOTEDGE_DEBUG
+    Serial.println(P("right sensor detected edge"));
+#endif
     mover.timedMove(MOV_BACK, 500);
     mover.rotate(-60);
+
   } else {
+
     mover.setSpeed(MIN_SPEED);
     mover.forward();
+
   }
 }

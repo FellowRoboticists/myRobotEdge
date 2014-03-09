@@ -5,3 +5,4 @@ lib/AFMotor
 lib/LEDBlinker
 lib/RobotMotor
 lib/SoftServo
+lib/pspc_support

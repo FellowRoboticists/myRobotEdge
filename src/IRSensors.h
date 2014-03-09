@@ -1,7 +1,7 @@
 // myRobotEdge Arduino sketch
 //
 // Copyright (c) 2012 Michael Margolis
-// Copyright (c) 2013 Dave Sieh
+// Copyright (c) 2013,2014 Dave Sieh
 //
 // See LICENSE.txt for details.
 
@@ -28,10 +28,9 @@ class IRSensors {
   int irSensorReflect[NBR_SENSORS]; // value considered detecting an object
   int irSensorEdge[NBR_SENSORS];    // value considered detecting an edge
   boolean isDetected[NBR_SENSORS] = { false, false }; // True if detected
-  const char *locationString[NBR_SENSORS] = { "Left", "Right" };
 
   const int irReflectThreshold = 10; // % level below ambient to trigger reflection
-  const int irEdgeThreshold    = 90; // % level above ambient to trigger edge
+  const int irEdgeThreshold    = 5; // % level above ambient to trigger edge
 
 };
 

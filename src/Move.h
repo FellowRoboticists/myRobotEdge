@@ -1,7 +1,7 @@
 // myRobotEdge Arduino sketch
 //
 // Copyright (c) 2012 Michael Margolis
-// Copyright (c) 2013 Dave Sieh
+// Copyright (c) 2013,2014 Dave Sieh
 //
 // See LICENSE.txt for details.
 
@@ -35,7 +35,7 @@ class Move {
   void faster();
   int getState();
   void rotate(int angle);
-  void timedMove(int direction, int duration);
+  void timedMove(int direction, long duration);
 
  private:
   int changeMoveState(int newState);

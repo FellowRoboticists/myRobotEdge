@@ -1,12 +1,26 @@
 // myRobotEdge Arduino sketch
 //
 // Copyright (c) 2012 Michael Margolis
-// Copyright (c) 2013 Dave Sieh
+// Copyright (c) 2013,2014 Dave Sieh
 //
 // See LICENSE.txt for details.
 
 #include <Arduino.h>
+#include <pspc_support.h>
 #include "IRSensors.h"
+
+#ifdef IRSENSORS_DEBUG
+#define LOCATION_NAME(i) STRING_FROM_TABLE(locationNames,i)
+
+const char loc_left[] PROGMEM = "Left";
+const char loc_right[] PROGMEM = "Right";
+
+PGM_P const locationNames[] PROGMEM {
+  loc_left,
+  loc_right
+};
+
+#endif
 
 IRSensors::IRSensors(byte leftPin, byte rightPin) {
   IR_SENSORS[0] = leftPin;
@@ -32,12 +46,19 @@ void IRSensors::calibrate(byte sensor) {
 boolean IRSensors::edgeDetect(int sensor) {
   boolean result = false; // default value
   int value = analogRead(IR_SENSORS[sensor]); // Get the light level
+#ifdef IRSENSORS_DEBUG
+  Serial.print(P("Sensor  = ")); Serial.println(sensor);
+  Serial.print(P("Current = ")); Serial.println(value);
+  Serial.print(P("Cal     = ")); Serial.println(irSensorEdge[sensor]);
+#endif
   if (value >= irSensorEdge[sensor]) {
     result = true; // Edge detected (higher value means less reflected)
+#ifdef IRSENSORS_DEBUG
     if (isDetected[sensor] == false) { // only print on initial detection
-      Serial.print(locationString[sensor]);
-      Serial.println(" edge detected");
+      Serial.print(LOCATION_NAME(sensor));
+      Serial.println(P(" edge detected"));
     }
+#endif
   }
   isDetected[sensor] = result;
   return result;

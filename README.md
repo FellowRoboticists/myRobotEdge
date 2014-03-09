@@ -10,6 +10,22 @@ You will note that some of the code here looks like some of the library code we'
 got in the other repositories. They are not the same. The edge sketch is a 
 relatively small subset of the actual full libraries.
 
+Programming
+===========
+
+Here is how the thing is programmed.
+
+If there is no edge at startup, move forward at minimum speed. 
+
+If while moving forward an edge is detected by both sensors, move backward for
+a half-second, then rotate right 120 degrees. Again, move forward.
+
+If while moving forward an edge is detected by the left sensor, move back for
+a half-second, then rotate right 60 degrees. Again, move forward.
+
+If while moving forward an edge is detected by the right sensor, move back for
+a half-secon, then rotate left 60 degrees. Again, move forward.
+
 Building/Testing
 ================
 

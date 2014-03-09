@@ -1,18 +1,48 @@
 // myRobotEdge Arduino sketch
 //
 // Copyright (c) 2012 Michael Margolis
-// Copyright (c) 2013 Dave Sieh
+// Copyright (c) 2013,2014 Dave Sieh
 //
 // See LICENSE.txt for details.
 
 #include <Arduino.h>
 #include <RobotMotor.h>
+#include <pspc_support.h>
 #include "Move.h"
 #include "Look.h"
 
-const char *states[] = { "MoveLeft", "MoveRight", "MoveForward", "MoveBack", "MoveRotate", "MoveStop" };
+#ifdef MOVE_DEBUG
+#define STATE_NAME(i) STRING_FROM_TABLE(stateNames,i)
 
-const char *locationString[] = { "Left", "Right", "Center" };
+const char stateMoveLeft[] PROGMEM = "MoveLeft";
+const char stateMoveRight[] PROGMEM = "MoveRight";
+const char stateMoveForward[] PROGMEM = "MoveForward";
+const char stateMoveBack[] PROGMEM = "MoveBack";
+const char stateMoveRotate[] PROGMEM = "MoveRotate";
+const char stateMoveStop[] PROGMEM = "MoveStop";
+
+PGM_P const stateNames[] PROGMEM = {
+  stateMoveLeft,
+  stateMoveRight,
+  stateMoveForward,
+  stateMoveBack,
+  stateMoveRotate,
+  stateMoveStop 
+};
+
+#define LOCATION_NAME(i) STRING_FROM_TABLE(locationNames,i)
+
+const char locLeft[] PROGMEM = "Left";
+const char locRight[] PROGMEM = "Right";
+const char locCenter[] PROGMEM = "Center";
+
+PGM_P const locationNames[] PROGMEM = {
+  locLeft,
+  locRight,
+  locCenter
+};
+
+#endif
 
 Move::Move(Look *look) {
   looker = look;
@@ -68,7 +98,9 @@ void Move::setSpeed(int speed) {
 }
 
 void Move::slower() {
-  Serial.print(" Slower: ");
+#ifdef MOVE_DEBUG
+  Serial.print(P(" Slower: "));
+#endif
   if (moveSpeed >= speedIncrement + MIN_SPEED) {
     moveSpeed -= speedIncrement;
   } else {
@@ -78,7 +110,9 @@ void Move::slower() {
 }
 
 void Move::faster() {
-  Serial.print(" Faster: ");
+#ifdef MOVE_DEBUG
+  Serial.print(P(" Faster: "));
+#endif
   moveSpeed += speedIncrement;
   if (moveSpeed > 100) {
     moveSpeed = 100;
@@ -92,29 +126,42 @@ int Move::getState() {
 
 int Move::changeMoveState(int newState) {
   if (newState != moveState) {
-    Serial.print("Changing move state from ");
-    Serial.print(states[moveState]);
-    Serial.print(" to ");
-    Serial.println(states[newState]);
+#ifdef MOVE_DEBUG
+    Serial.print(P("Changing move state from "));
+    Serial.print(STATE_NAME(moveState));
+    Serial.print(P(" to "));
+    Serial.println(STATE_NAME(newState));
+#endif
     moveState = newState;
   }
 }
 
 void Move::rotate(int angle) {
-  Serial.print("Rotating "); 
+#ifdef MOVE_DEBUG
+  Serial.print(P("Rotating ")); 
   Serial.println(angle);
+#endif
   if (angle < 0) {
-    Serial.println(" (left)");
+
+#ifdef MOVE_DEBUG
+    Serial.println(P(" (left)"));
+#endif
     motorReverse(MOTOR_LEFT, moveSpeed);
     motorForward(MOTOR_RIGHT, moveSpeed);
     angle = -angle; 
     changeMoveState(MOV_ROTATE);
+
   } else if (angle > 0) {
-    Serial.println(" (right)");
+
+#ifdef MOVE_DEBUG
+    Serial.println(P(" (right)"));
+#endif
     motorForward(MOTOR_LEFT, moveSpeed);
     motorReverse(MOTOR_RIGHT, moveSpeed);
     changeMoveState(MOV_ROTATE);
+
   }
+
   int ms = rotationAngleToTime(angle, moveSpeed);
   movingDelay(ms);
   brake();
@@ -136,22 +183,28 @@ long Move::rotationAngleToTime(int angle, int speed) {
     int t0 = rotationTime[index];
     int t1 = rotationTime[index + 1];
     fullRotationTime = map(speed, speedTable[index], speedTable[index + 1], t0, t1);
-    Serial.print("index = ");
+#ifdef MOVE_DEBUG
+    Serial.print(P("index = "));
     Serial.print(index);
-    Serial.print(", t0 = ");
+    Serial.print(P(", t0 = "));
     Serial.print(t0);
-    Serial.print(", t1 = ");
+    Serial.print(P(", t1 = "));
     Serial.print(t1);
+#endif
   }
-  Serial.print(" full rotation time = ");
+#ifdef MOVE_DEBUG
+  Serial.print(P(" full rotation time = "));
   Serial.println(fullRotationTime);
+#endif
   long result = map(angle, 0, 360, 0, fullRotationTime);
   return result;
 }
 
 void Move::calibrateRotationRate(int direction, int angle) {
-  Serial.print(locationString[direction]);
-  Serial.println(" calibration");
+#ifdef MOVE_DEBUG
+  Serial.print(LOCATION_NAME(direction));
+  Serial.println(P(" calibration"));
+#endif
   for (int speed = MIN_SPEED; speed <= 100; speed += SPEED_TABLE_INTERVAL) {
     delay(1000);
     
@@ -164,19 +217,23 @@ void Move::calibrateRotationRate(int direction, int angle) {
       motorForward(MOTOR_LEFT, speed);
       motorReverse(MOTOR_RIGHT, speed);
     } else {
-      Serial.println("Invalid direction");
+#ifdef MOVE_DEBUG
+      Serial.println(P("Invalid direction"));
+#endif
     }
     
     int time = rotationAngleToTime(angle, speed);
     
-    Serial.print(locationString[direction]);
-    Serial.print(": rotate ");
+#ifdef MOVE_DEBUG
+    Serial.print(LOCATION_NAME(direction));
+    Serial.print(P(": rotate "));
     Serial.print(angle);
-    Serial.print(" degrees at speed ");
+    Serial.print(P(" degrees at speed "));
     Serial.print(speed);
-    Serial.print(" for ");
+    Serial.print(P(" for "));
     Serial.print(time);
-    Serial.print("ms");
+    Serial.print(P("ms"));
+#endif
     delay(time);
     motorStop(MOTOR_LEFT);
     motorStop(MOTOR_RIGHT);
@@ -184,16 +241,24 @@ void Move::calibrateRotationRate(int direction, int angle) {
   }
 }
 
-void Move::timedMove(int direction, int duration) {
-  Serial.print("Timed move ");
+void Move::timedMove(int direction, long duration) {
+#ifdef MOVE_DEBUG
+  Serial.print(P("Timed move "));
+#endif
   if (direction == MOV_FORWARD) {
-    Serial.println("forward");
+#ifdef MOVE_DEBUG
+    Serial.println(P("forward"));
+#endif
     forward();
   } else if (direction == MOV_BACK) {
-    Serial.println("back");
+#ifdef MOVE_DEBUG
+    Serial.println(P("back"));
+#endif
     backward();
   } else {
-    Serial.println("?");
+#ifdef MOVE_DEBUG
+    Serial.println(P("?"));
+#endif
   }
   movingDelay(duration);
   stop();
@@ -207,9 +272,11 @@ void Move::movingDelay(long duration) {
     // function in Look module checks for obstacle in direction of movement 
     if (looker->checkMovement() == false) { 
       if (moveState != MOV_ROTATE) {
-	// rotate is only valid movement
-	Serial.println("Stopping in moving Delay()"); 
-	brake(); 
+        // rotate is only valid movement
+#ifdef MOVE_DEBUG
+        Serial.println(P("Stopping in moving Delay()")); 
+#endif
+        brake(); 
       }
     }  
     elapsedTime = millis() - startTime;
