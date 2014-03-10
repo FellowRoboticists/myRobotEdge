@@ -35,7 +35,8 @@ void IRSensors::begin() {
 
  // Calibrate thresholds for ambient light
 void IRSensors::calibrate(byte sensor) {
-  int ambient = analogRead(IR_SENSORS[sensor]); // Get ambient level
+  int ambient = averageValue(sensor); // Get ambient level
+
   irSensorAmbient[sensor] = ambient;
    
   // Precalculate the levels for object and edge detection
@@ -43,9 +44,18 @@ void IRSensors::calibrate(byte sensor) {
   irSensorEdge[sensor]    = (ambient * (long)(100 + irEdgeThreshold)) / 100;
 }
 
+int IRSensors::averageValue(int sensor, byte numReadings) {
+  int cumulativeValue = 0;
+  for (byte reading = 0; reading < numReadings; reading++) {
+    cumulativeValue += analogRead(IR_SENSORS[sensor]);
+  }
+  return cumulativeValue / numReadings;
+}
+
 boolean IRSensors::edgeDetect(int sensor) {
   boolean result = false; // default value
-  int value = analogRead(IR_SENSORS[sensor]); // Get the light level
+  int value = averageValue(sensor);
+
 #ifdef IRSENSORS_DEBUG
   Serial.print(P("Sensor  = ")); Serial.println(sensor);
   Serial.print(P("Current = ")); Serial.println(value);

@@ -22,6 +22,7 @@ class IRSensors {
 
  private:
   void calibrate(byte sensor);
+  int averageValue(int sensor, byte numReadings=4);
 
   byte IR_SENSORS[NBR_SENSORS] = { -1, -1 };
   int irSensorAmbient[NBR_SENSORS]; // sensor value with no reflection
